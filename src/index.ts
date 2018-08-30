@@ -1,5 +1,8 @@
 import Z80 from "./Z80";
 import { Terminal } from "xterm";
+import _chalk from "chalk";
+
+const chalk = new _chalk.constructor({ enabled: true, level: 1 });
 
 class Core {
   mem = range(0x10000).map(() => 0);
@@ -34,8 +37,12 @@ function locate(x: number, y: number) {
 function drawMem() {
   for (let i = 0; i < 256; i++) {
     locate((i % 16) * 3 + 5, Math.floor(i / 16) + 1);
-    const memStr = "0" + core.mem[i].toString(16);
-    memTerm.write(memStr.substr(memStr.length - 2, 2));
+    let memStr = "0" + core.mem[i].toString(16);
+    memStr = memStr.substr(memStr.length - 2, 2);
+    if (i === z80.pc) {
+      memStr = chalk.red(memStr);
+    }
+    memTerm.write(memStr);
   }
 }
 
