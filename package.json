@@ -1,0 +1,19 @@
+{
+  "name": "z80-repl",
+  "version": "1.0.0",
+  "description": "Z80 CPU REPL environment",
+  "devDependencies": {
+    "awesome-typescript-loader": "^5.2.0",
+    "typescript": "^3.0.3",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-serve": "^2.0.2"
+  },
+  "dependencies": {},
+  "scripts": {
+    "start": "webpack-serve --content docs",
+    "build": "webpack"
+  },
+  "author": "abagames",
+  "license": "MIT"
+}

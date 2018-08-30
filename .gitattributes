@@ -1,0 +1,4 @@
+docs/* linguist-documentation
+web_modules/* linguist-vendored
+web_typings/* linguist-vendored
+build/* linguist-generated
