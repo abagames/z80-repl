@@ -29,11 +29,12 @@ function showPrompt(resetCommand = false) {
   term.write(`\n\r> ${command}`);
 }
 
+let history = [];
+let historyIndex = 0;
 let command = "";
 
 function onData(data: string) {
   const d0 = data.charCodeAt(0);
-  //console.log(d0);
   if (d0 >= 0x20 && d0 <= 0x7e) {
     term.write(data);
     command += data;
@@ -46,6 +47,13 @@ function onData(data: string) {
     handleTab();
   } else if (d0 === 0xd) {
     handleEnter();
+  } else if (d0 === 0x1b) {
+    const d2 = data.charCodeAt(2);
+    if (d2 === 0x41) {
+      prevHistory();
+    } else if (d2 === 0x42) {
+      nextHistory();
+    }
   }
 }
 
@@ -74,6 +82,8 @@ function handleEnter() {
     runInstruction();
     return;
   }
+  history.push(command);
+  historyIndex = history.length;
   const ncs = normalizeCommand(command);
   let instIndex = -1;
   for (let nc of ncs) {
@@ -181,5 +191,21 @@ function matchNumber(command: string) {
     return nc0.substr(5).match(/-?([A-F0-9]+H|[0-9]+)/g);
   } else {
     return nc0.match(/-?([A-F0-9]+H|[0-9]+)/g);
+  }
+}
+
+function prevHistory() {
+  if (historyIndex > 0) {
+    historyIndex--;
+    command = history[historyIndex];
+    term.write(`\r> ${command}\x1B[K`);
+  }
+}
+
+function nextHistory() {
+  if (historyIndex < history.length) {
+    historyIndex++;
+    command = historyIndex < history.length ? history[historyIndex] : "";
+    term.write(`\r> ${command}\x1B[K`);
   }
 }
