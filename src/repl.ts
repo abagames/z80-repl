@@ -137,7 +137,7 @@ function handleEnter() {
     ops.push(instIndex & 0xff);
   }
   ops.forEach((op, i) => {
-    mem.core.mem_write(z80.pc + i, op);
+    mem.core.mem_write((z80.pc + i) & 0xffff, op);
   });
   const cycles = loopInstructions();
   mem.draw();
