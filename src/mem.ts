@@ -1,6 +1,6 @@
 import Z80 from "./Z80";
 import { Terminal } from "xterm";
-import { range, locate, chalk } from "./util";
+import { range, locate, chalk, padHex } from "./util";
 
 class Core {
   mem = range(0x10000).map(() => 0);
@@ -22,7 +22,7 @@ export const core = new Core();
 
 const term = new Terminal({
   cols: 80,
-  rows: 18,
+  rows: 17,
   theme: { background: "#222", cursor: "#222" }
 });
 
@@ -38,12 +38,11 @@ export function draw(z80: Z80) {
   for (let i = 0; i < 256; i++) {
     locate(term, (i % 16) * 3 + 5, Math.floor(i / 16) + 1);
     const m = core.mem[i];
-    let memStr = "0" + m.toString(16).toUpperCase();
-    memStr = memStr.substr(memStr.length - 2, 2);
+    let memStr = padHex(m);
     if (i === z80.pc) {
-      memStr = chalk.bgRedBright(memStr);
+      memStr = chalk.bgRed(memStr);
     } else if (i === z80.sp) {
-      memStr = chalk.bgYellowBright(memStr);
+      memStr = chalk.bgYellow(memStr);
     }
     if (i === ((z80.h << 8) | z80.l)) {
       memStr = chalk.magentaBright(memStr);

@@ -1,7 +1,9 @@
 import Z80 from "./Z80";
 import { Terminal } from "xterm";
 import * as mem from "./mem";
+import * as reg from "./reg";
 import instructions from "./instructions";
+import { padHex } from "./util";
 
 const term = new Terminal({
   cols: 80,
@@ -17,6 +19,7 @@ let z80: Z80;
 export function init(_z80) {
   z80 = _z80;
   showPrompt();
+  term.focus();
 }
 
 function showPrompt(resetCommand = false) {
@@ -120,6 +123,7 @@ function handleEnter() {
   });
   const cycles = z80.run_instruction();
   mem.draw(z80);
+  reg.draw(z80);
   drawOps(ops, cycles);
 }
 
@@ -139,14 +143,7 @@ function runInstruction() {
 }
 
 function drawOps(ops, cycles) {
-  term.write(
-    `\n\r${ops
-      .map(op => {
-        let memStr = "0" + op.toString(16).toUpperCase();
-        return memStr.substr(memStr.length - 2, 2);
-      })
-      .join(" ")}\t(${cycles} cycles)`
-  );
+  term.write(`\n\r${ops.map(op => padHex(op)).join(" ")}\t(${cycles} cycles)`);
   showPrompt(true);
 }
 
