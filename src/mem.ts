@@ -29,13 +29,36 @@ const term = new Terminal({
 term.open(document.getElementById("mem"));
 
 export function draw(z80: Z80) {
+  for (let i = 0; i < 16; i++) {
+    locate(term, i * 3 + 5, 0);
+    term.write(chalk.blue(`0${i.toString(16)}`));
+    locate(term, 0, i + 1);
+    term.write(chalk.blue(`00${i.toString(16)}0`));
+  }
   for (let i = 0; i < 256; i++) {
     locate(term, (i % 16) * 3 + 5, Math.floor(i / 16) + 1);
-    let memStr = "0" + core.mem[i].toString(16);
+    const m = core.mem[i];
+    let memStr = "0" + m.toString(16).toUpperCase();
     memStr = memStr.substr(memStr.length - 2, 2);
     if (i === z80.pc) {
-      memStr = chalk.red(memStr);
+      memStr = chalk.bgRedBright(memStr);
+    } else if (i === z80.sp) {
+      memStr = chalk.bgYellowBright(memStr);
+    }
+    if (i === ((z80.h << 8) | z80.l)) {
+      memStr = chalk.magentaBright(memStr);
+    } else if (i === ((z80.b << 8) | z80.c)) {
+      memStr = chalk.greenBright(memStr);
+    } else if (i === ((z80.d << 8) | z80.e)) {
+      memStr = chalk.cyanBright(memStr);
+    } else if (i === z80.ix) {
+      memStr = chalk.green(memStr);
+    } else if (i === z80.iy) {
+      memStr = chalk.cyan(memStr);
     }
     term.write(memStr);
+    locate(term, (i % 16) + 54, Math.floor(i / 16) + 1);
+    let memChar = m < 0x20 ? "." : String.fromCharCode(m);
+    term.write(memChar);
   }
 }

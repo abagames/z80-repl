@@ -118,7 +118,9 @@ function handleEnter() {
   const cycles = z80.run_instruction();
   mem.draw(z80);
   term.write(
-    `\n\r${ops.map(op => op.toString(16)).join(" ")}\t(${cycles} cycles)`
+    `\n\r${ops
+      .map(op => op.toString(16).toUpperCase())
+      .join(" ")}\t(${cycles} cycles)`
   );
   showPrompt(true);
 }

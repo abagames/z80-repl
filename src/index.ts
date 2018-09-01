@@ -4,8 +4,8 @@ import * as repl from "./repl";
 
 export const z80 = new Z80(mem.core);
 
-mem.core.mem_write(0, 0x3e);
-mem.core.mem_write(1, 0x11);
-z80.run_instruction();
+z80.pc = 0x80;
+z80.sp = 0xf0;
+
 mem.draw(z80);
 repl.init(z80);
