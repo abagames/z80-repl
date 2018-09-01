@@ -3,12 +3,13 @@ import { Terminal } from "xterm";
 import * as mem from "./mem";
 import * as reg from "./reg";
 import instructions from "./instructions";
-import { padHex } from "./util";
+import { padHex, fontFamily } from "./util";
 
 const term = new Terminal({
   cols: 80,
   rows: 10,
-  theme: { background: "#222" }
+  theme: { background: "#222" },
+  fontFamily
 });
 
 term.open(document.getElementById("repl"));

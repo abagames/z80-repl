@@ -1,6 +1,6 @@
 import Z80 from "./Z80";
 import { Terminal } from "xterm";
-import { range, locate, chalk, padHex } from "./util";
+import { range, locate, chalk, padHex, fontFamily } from "./util";
 
 class Core {
   mem = range(0x10000).map(() => 0);
@@ -23,7 +23,8 @@ export const core = new Core();
 const term = new Terminal({
   cols: 80,
   rows: 17,
-  theme: { background: "#222", cursor: "#222" }
+  theme: { background: "#222", cursor: "#222" },
+  fontFamily
 });
 
 term.open(document.getElementById("mem"));

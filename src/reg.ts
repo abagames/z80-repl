@@ -1,11 +1,12 @@
 import { Terminal } from "xterm";
 import Z80 from "./Z80";
-import { locate, padHex, chalk } from "./util";
+import { locate, padHex, chalk, fontFamily } from "./util";
 
 const term = new Terminal({
   cols: 80,
   rows: 2,
-  theme: { background: "#222", cursor: "#222" }
+  theme: { background: "#222", cursor: "#222" },
+  fontFamily
 });
 
 term.open(document.getElementById("reg"));
