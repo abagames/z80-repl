@@ -19,8 +19,15 @@ let z80: Z80;
 
 export function init(_z80) {
   z80 = _z80;
+  showHelp();
   showPrompt();
   term.focus();
+}
+
+function showHelp() {
+  term.write("Input a Z80 instruction and press the [enter] to run it.\n\r");
+  term.write("e.g. ld c,20h    add a,c    push bc\n\r");
+  term.write("Press the [tab] to show candidate instructions.");
 }
 
 function showPrompt(resetCommand = false) {
