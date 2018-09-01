@@ -2,16 +2,22 @@ import { Terminal } from "xterm";
 import Z80 from "./Z80";
 import { locate, padHex, chalk, fontFamily } from "./util";
 
-const term = new Terminal({
-  cols: 80,
-  rows: 2,
-  theme: { background: "#222", cursor: "#222" },
-  fontFamily
-});
+let z80: Z80;
+let term: Terminal;
 
-term.open(document.getElementById("reg"));
+export function init(_z80: Z80) {
+  z80 = _z80;
+  term = new Terminal({
+    cols: 80,
+    rows: 2,
+    theme: { background: "#222", cursor: "#222" },
+    fontFamily
+  });
+  term.open(document.getElementById("reg"));
+  draw();
+}
 
-export function draw(z80: Z80) {
+export function draw() {
   locate(term, 0, 0);
   term.write(
     `A   ${chalk.greenBright("B  C")}   ${chalk.cyanBright(

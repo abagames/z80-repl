@@ -5,20 +5,19 @@ import * as reg from "./reg";
 import instructions from "./instructions";
 import { padHex, fontFamily } from "./util";
 
-const term = new Terminal({
-  cols: 80,
-  rows: 10,
-  theme: { background: "#222" },
-  fontFamily
-});
-
-term.open(document.getElementById("repl"));
-term.on("data", onData);
-
 let z80: Z80;
+let term: Terminal;
 
 export function init(_z80) {
   z80 = _z80;
+  term = new Terminal({
+    cols: 80,
+    rows: 10,
+    theme: { background: "#222" },
+    fontFamily
+  });
+  term.open(document.getElementById("repl"));
+  term.on("data", onData);
   showHelp();
   showPrompt();
   term.focus();
@@ -141,8 +140,8 @@ function handleEnter() {
     mem.core.mem_write(z80.pc + i, op);
   });
   const cycles = loopInstructions();
-  mem.draw(z80);
-  reg.draw(z80);
+  mem.draw();
+  reg.draw();
   drawOps(ops, cycles);
 }
 
@@ -163,7 +162,7 @@ function loopInstructions() {
 function runInstruction() {
   let ppc = z80.pc;
   const cycles = loopInstructions();
-  mem.draw(z80);
+  mem.draw();
   let ops = [];
   for (let i = 0; i < 9; i++) {
     ops.push(mem.core.mem_read(ppc));

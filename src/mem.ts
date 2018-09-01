@@ -21,17 +21,22 @@ class Core {
 }
 
 export const core = new Core();
+let z80: Z80;
+let term: Terminal;
 
-const term = new Terminal({
-  cols: 80,
-  rows: 17,
-  theme: { background: "#222", cursor: "#222" },
-  fontFamily
-});
+export function init(_z80: Z80) {
+  z80 = _z80;
+  term = new Terminal({
+    cols: 80,
+    rows: 17,
+    theme: { background: "#222", cursor: "#222" },
+    fontFamily
+  });
+  term.open(document.getElementById("mem"));
+  draw();
+}
 
-term.open(document.getElementById("mem"));
-
-export function draw(z80: Z80) {
+export function draw() {
   for (let i = 0; i < 16; i++) {
     locate(term, i * 3 + 5, 0);
     term.write(chalk.blue(`0${i.toString(16)}`));
