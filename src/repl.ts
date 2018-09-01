@@ -132,15 +132,29 @@ function handleEnter() {
   ops.forEach((op, i) => {
     mem.core.mem_write(z80.pc + i, op);
   });
-  const cycles = z80.run_instruction();
+  const cycles = loopInstructions();
   mem.draw(z80);
   reg.draw(z80);
   drawOps(ops, cycles);
 }
 
+const maxLoopCount = 0x40;
+
+function loopInstructions() {
+  let cycles = 0;
+  for (let i = 0; i < maxLoopCount; i++) {
+    const ppc = z80.pc;
+    cycles += z80.run_instruction();
+    if (z80.pc !== ppc) {
+      break;
+    }
+  }
+  return cycles;
+}
+
 function runInstruction() {
   let ppc = z80.pc;
-  const cycles = z80.run_instruction();
+  const cycles = loopInstructions();
   mem.draw(z80);
   let ops = [];
   for (let i = 0; i < 9; i++) {
