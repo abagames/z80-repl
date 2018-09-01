@@ -1,56 +1,11 @@
 import Z80 from "./Z80";
-import { Terminal } from "xterm";
-import _chalk from "chalk";
+import * as mem from "./mem";
+import * as repl from "./repl";
 
-const chalk = new _chalk.constructor({ enabled: true, level: 1 });
+export const z80 = new Z80(mem.core);
 
-class Core {
-  mem = range(0x10000).map(() => 0);
-
-  mem_read(address: number) {
-    return this.mem[address];
-  }
-
-  mem_write(address: number, value: number) {
-    this.mem[address] = value;
-  }
-
-  io_read(port: number) {}
-
-  io_write(port: number, value: number) {}
-}
-
-const core = new Core();
-const z80 = new Z80(core);
-
-const memTerm = new Terminal({
-  cols: 80,
-  rows: 18,
-  theme: { background: "#222", cursor: "#222" }
-});
-memTerm.open(document.getElementById("mem"));
-
-function locate(x: number, y: number) {
-  memTerm.write(`\x1B[${y + 1};${x + 1}H`);
-}
-
-function drawMem() {
-  for (let i = 0; i < 256; i++) {
-    locate((i % 16) * 3 + 5, Math.floor(i / 16) + 1);
-    let memStr = "0" + core.mem[i].toString(16);
-    memStr = memStr.substr(memStr.length - 2, 2);
-    if (i === z80.pc) {
-      memStr = chalk.red(memStr);
-    }
-    memTerm.write(memStr);
-  }
-}
-
-core.mem_write(0, 0x3e);
-core.mem_write(1, 0x11);
+mem.core.mem_write(0, 0x3e);
+mem.core.mem_write(1, 0x11);
 z80.run_instruction();
-drawMem();
-
-function range(n: number) {
-  return [...Array(n).keys()];
-}
+mem.draw(z80);
+repl.init(z80);
