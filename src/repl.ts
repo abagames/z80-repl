@@ -48,7 +48,6 @@ function onData(data: string) {
 
 function handleTab() {
   const ncs = normalizeCommand(command);
-  console.log(ncs);
   let candidates = instructions.filter(
     inst => inst != null && ncs.some(nc => inst.startsWith(nc))
   );
@@ -96,10 +95,10 @@ function handleEnter() {
     ops.push(instIndex & 0xff);
   }
   const instNs = inst.match(/nn?/g);
-  const commandNs = command.toUpperCase().match(/([^ ])([A-F0-9]+H|[0-9]+)/g);
+  const commandNs = matchNumber(command);
   if (instNs != null && commandNs != null) {
     instNs.forEach((instN, i) => {
-      const commandN = commandNs[i].substr(1);
+      const commandN = commandNs[i];
       const n = commandN.endsWith("H")
         ? parseInt(commandN.substr(0, commandN.length - 1), 16)
         : parseInt(commandN);
@@ -131,16 +130,32 @@ function showError() {
 }
 
 function trimCommand(command: string) {
-  let tc = command.replace(/^(\w+ )/, "$1%");
+  let tc = command.toUpperCase();
+  tc = tc.replace(/^(\w+ )/, "$1%");
   tc = tc.replace(/\s/g, "");
   tc = tc.replace("%", " ");
   return tc;
 }
 
 function normalizeCommand(command: string) {
-  const nc = trimCommand(command);
-  const nc0 = nc.toUpperCase();
-  const nc1 = nc0.replace(/([^ ])([A-F0-9]+H|[0-9]+)/g, "$1n");
+  const nc0 = trimCommand(command);
+  let nc1;
+  if (nc0.startsWith("BIT") || nc0.startsWith("RES") || nc0.startsWith("SET")) {
+    nc1 = `${nc0.substr(0, 5)}${nc0
+      .substr(5)
+      .replace(/-?([A-F0-9]+H|[0-9]+)/g, "n")}`;
+  } else {
+    nc1 = nc0.replace(/-?([A-F0-9]+H|[0-9]+)/g, "n");
+  }
   const nc2 = nc1.replace(/n/g, "nn");
   return [nc0, nc1, nc2];
+}
+
+function matchNumber(command: string) {
+  const nc0 = trimCommand(command);
+  if (nc0.startsWith("BIT") || nc0.startsWith("RES") || nc0.startsWith("SET")) {
+    return nc0.substr(5).match(/-?([A-F0-9]+H|[0-9]+)/g);
+  } else {
+    return nc0.match(/-?([A-F0-9]+H|[0-9]+)/g);
+  }
 }
