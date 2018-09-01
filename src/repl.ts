@@ -48,6 +48,7 @@ function onData(data: string) {
 
 function handleTab() {
   const ncs = normalizeCommand(command);
+  console.log(ncs);
   let candidates = instructions.filter(
     inst => inst != null && ncs.some(nc => inst.startsWith(nc))
   );
@@ -88,14 +89,17 @@ function handleEnter() {
     [0xdd, 0xcb],
     [0xfd, 0xcb]
   ];
-  let pres = prefixes[instIndex >>> 8];
+  const preIndex = instIndex >>> 8;
+  const pres = prefixes[preIndex];
   let ops = pres.map(i => i);
-  ops.push(instIndex & 0xff);
-  let instNs = inst.match(/nn?/g);
-  let commandNs = command.toUpperCase().match(/([A-F0-9]+H|[0-9]+)/g);
+  if (preIndex < 5) {
+    ops.push(instIndex & 0xff);
+  }
+  const instNs = inst.match(/nn?/g);
+  const commandNs = command.toUpperCase().match(/([^ ])([A-F0-9]+H|[0-9]+)/g);
   if (instNs != null && commandNs != null) {
     instNs.forEach((instN, i) => {
-      const commandN = commandNs[i];
+      const commandN = commandNs[i].substr(1);
       const n = commandN.endsWith("H")
         ? parseInt(commandN.substr(0, commandN.length - 1), 16)
         : parseInt(commandN);
@@ -104,6 +108,9 @@ function handleEnter() {
         ops.push((n & 0xffff) >>> 8);
       }
     });
+  }
+  if (preIndex >= 5) {
+    ops.push(instIndex & 0xff);
   }
   ops.forEach((op, i) => {
     mem.core.mem_write(z80.pc + i, op);
@@ -131,7 +138,7 @@ function trimCommand(command: string) {
 function normalizeCommand(command: string) {
   const nc = trimCommand(command);
   const nc0 = nc.toUpperCase();
-  const nc1 = nc0.replace(/([A-F0-9]+H|[0-9]+)/g, "n");
+  const nc1 = nc0.replace(/([^ ])([A-F0-9]+H|[0-9]+)/g, "$1n");
   const nc2 = nc1.replace(/n/g, "nn");
   return [nc0, nc1, nc2];
 }
