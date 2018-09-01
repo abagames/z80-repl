@@ -13,7 +13,9 @@ class Core {
     this.mem[address] = value;
   }
 
-  io_read(port: number) {}
+  io_read(port: number) {
+    return 0;
+  }
 
   io_write(port: number, value: number) {}
 }
