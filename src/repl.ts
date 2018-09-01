@@ -78,7 +78,7 @@ function handleTab() {
     .join("");
   term.write("\n\r" + candidatesStr);
   if (cl > 20) {
-    term.write(`...and other ${cl - 20} intsructions`);
+    term.write(`...and other ${cl - 20} instructions`);
   }
   showPrompt();
 }
