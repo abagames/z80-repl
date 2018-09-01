@@ -19,7 +19,7 @@ export function draw(z80: Z80) {
       "I Y"
     )}  ${chalk.bgRed("P C ")} ${chalk.bgYellow("S P ")} ${chalk.blue(
       "SZYHXPNC"
-    )}\n\r`
+    )}  I   R\n\r`
   );
   term.write(
     `${padHex(z80.a)}  ${padHex(z80.b)} ${padHex(z80.c)}  ${padHex(
@@ -30,7 +30,7 @@ export function draw(z80: Z80) {
     )} ${padHex(z80.iy, 4)} ${padHex(z80.pc, 4)} ${padHex(
       z80.sp,
       4
-    )} ${drawFlags(z80.flags)}`
+    )} ${drawFlags(z80.flags)}  ${padHex(z80.i)}  ${padHex(z80.r)}`
   );
 }
 

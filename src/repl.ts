@@ -69,6 +69,7 @@ function handleTab() {
 }
 
 function handleEnter() {
+  z80.halted = false;
   if (command.length <= 0) {
     runInstruction();
     return;
