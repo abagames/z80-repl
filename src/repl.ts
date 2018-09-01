@@ -66,6 +66,10 @@ function handleTab() {
 }
 
 function handleEnter() {
+  if (command.length <= 0) {
+    runInstruction();
+    return;
+  }
   const ncs = normalizeCommand(command);
   let instIndex = -1;
   for (let nc of ncs) {
@@ -116,9 +120,31 @@ function handleEnter() {
   });
   const cycles = z80.run_instruction();
   mem.draw(z80);
+  drawOps(ops, cycles);
+}
+
+function runInstruction() {
+  let ppc = z80.pc;
+  const cycles = z80.run_instruction();
+  mem.draw(z80);
+  let ops = [];
+  for (let i = 0; i < 9; i++) {
+    ops.push(mem.core.mem_read(ppc));
+    ppc = (ppc + 1) & 0xffff;
+    if (ppc >= z80.pc) {
+      break;
+    }
+  }
+  drawOps(ops, cycles);
+}
+
+function drawOps(ops, cycles) {
   term.write(
     `\n\r${ops
-      .map(op => op.toString(16).toUpperCase())
+      .map(op => {
+        let memStr = "0" + op.toString(16).toUpperCase();
+        return memStr.substr(memStr.length - 2, 2);
+      })
       .join(" ")}\t(${cycles} cycles)`
   );
   showPrompt(true);
