@@ -149,12 +149,19 @@ const maxLoopCount = 0x40;
 
 function loopInstructions() {
   let cycles = 0;
+  let isPcMoving = false;
   for (let i = 0; i < maxLoopCount; i++) {
     const ppc = z80.pc;
     cycles += z80.run_instruction();
     if (z80.pc !== ppc) {
+      isPcMoving = true;
       break;
     }
+  }
+  if (!isPcMoving) {
+    term.write(
+      `\r\nLooping ${maxLoopCount} times. Press the [enter] to continue.`
+    );
   }
   return cycles;
 }
@@ -163,6 +170,7 @@ function runInstruction() {
   let ppc = z80.pc;
   const cycles = loopInstructions();
   mem.draw();
+  reg.draw();
   let ops = [];
   for (let i = 0; i < 9; i++) {
     ops.push(mem.core.mem_read(ppc));
